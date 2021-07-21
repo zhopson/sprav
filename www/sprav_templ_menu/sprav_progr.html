@@ -1,0 +1,253 @@
+<?php
+header('Content-Type: text/html; charset=windows-1251');
+
+echo '<html xmlns="http://www.w3.org/1999/xhtml">';
+echo '<head>';
+echo '<meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />';
+echo '<title>Мой первый сайт</title>';
+
+
+echo '<link href="style.css" rel="stylesheet" type="text/css" />';
+
+echo '</head>';
+echo '<body>';
+
+include 'header.html';
+
+echo '<form action="" name="GoPostLang" method="post"><input type="hidden" name="lang_id"></form>';
+
+echo '<script>';
+echo 'function SubPost($val)';
+echo '{';
+echo ' document.GoPostLang.lang_id.value=$val;';
+echo ' document.GoPostLang.submit();';
+echo '};';
+echo '</script>';
+
+echo '<ul class="sub">';
+
+$link = mysqli_connect('db', 'man_local', '123qwe') or die('Не удалось соединиться: ' . mysqli_error($link));
+mysqli_select_db($link,'my_db') or die('Не удалось выбрать базу данных');
+mysqli_set_charset($link,"utf8");
+
+$query = 'SELECT * FROM lang';
+$result = mysqli_query($link,$query) or die('Запрос не удался: ' . mysqli_error($link));
+while ($row = mysqli_fetch_row($result)) {
+    $col_value = mb_convert_encoding($row[1],"WINDOWS-1251","UTF-8");
+    
+    echo '<li><a href="JavaScript:SubPost('.$row[0].')">'.$col_value.'</a></li>';
+}
+//<!--<li class="noImg"><a href="#">Finance</a></li>-->
+echo '</ul>';
+
+echo '</div>';
+echo '</div>';
+
+//<!--top end -->
+//<!--bodyMain start -->
+echo '<div id="bodyMain">';
+//<!--body start -->
+echo '<div id="body">';
+//<!--left start -->
+include 'left.html';
+//<!--left end -->
+//<!--right start -->
+echo '<div id="right">';
+//<!--green start -->
+//<!--green end -->
+echo '<h3>Справочники по программированию </h3>';
+echo '<p class="rightTxt1"><br/>';
+echo '  Всю представленную информацию я собирал для себя,';
+echo ' как удобный инструмент для облегчения и ускорения работы.';
+echo ' Фрагменты кода представлены исключительно в ознакомительных целях.';
+echo '</p>';
+
+echo '<h3></h3>';
+
+echo '<br/>';
+
+echo '<form action="" name="GoPostTtask" method="post"><input type="hidden" name="ttask_id"></form>';
+echo '<form action="" name="GoPostCodeID" method="post"><input type="hidden" name="code_id"><input type="hidden" name="ttask_id"></form>';
+
+echo '<script>';
+echo 'function SubPost_ttask($pttask)';
+echo '{';
+echo ' document.GoPostTtask.ttask_id.value=$pttask;';
+echo ' document.GoPostTtask.submit();';
+echo '};';
+echo '</script>';
+
+echo '<script type="text/javascript">';
+echo 'function post_code_id(cid,tid){';
+echo '    document.GoPostCodeID.code_id.value=cid;';
+echo '    document.GoPostCodeID.ttask_id.value=tid;';
+echo '    document.GoPostCodeID.submit();';
+echo '};';
+echo '</script>';
+
+
+//<!--
+//<script type="text/javascript">
+//function show_win(state) {
+//    if (state!=0) stat="block";
+//    else stat="none";
+//    document.getElementById('window').style.display = stat;
+//    document.getElementById('wrap').style.display = stat;
+//}
+//</script>
+//-->
+
+if (isset($_POST['lang_id'])):
+{
+    $lang_id_real=$_POST['lang_id'];
+    
+    $link = mysqli_connect('db', 'man_local', '123qwe') or die('Не удалось соединиться: ' . mysqli_error($link));
+    mysqli_select_db($link,'my_db') or die('Не удалось выбрать базу данных');
+    mysqli_set_charset($link,"utf8");
+
+    $query = 'SELECT * FROM lang where id='.$lang_id_real;
+    $result = mysqli_query($link,$query) or die('Запрос не удался: ' . mysqli_error($link));
+
+    $row = mysqli_fetch_row($result);
+    $lang = $row[1];
+    
+echo '<div id="left">';
+
+    echo '<h2><span_no_arrow>Выбранный язык: '.$lang.'</span_no_arrow></h2>';
+//    echo '<p class="rightTxt2">Выбранный Язык: '.$lang.'</p>';
+    echo '<hr size="1">';    
+    echo '</br><p class="rightTxt2">Типы задач:</p>';
+
+    $link = mysqli_connect('db', 'man_local', '123qwe') or die('Не удалось соединиться: ' . mysqli_error($link));
+    mysqli_select_db($link,'my_db') or die('Не удалось выбрать базу данных');
+    mysqli_set_charset($link,"utf8");
+
+    $query = 'SELECT * FROM type_task WHERE lang_id='.$lang_id_real;
+    $result = mysqli_query($link,$query) or die('Запрос не удался: ' . mysqli_error($link));
+    $i=0;
+    while ($row = mysqli_fetch_row($result)) {
+	$i++;
+	$col_value = mb_convert_encoding($row[1],"WINDOWS-1251","UTF-8");
+//	echo '<li><a href="JavaScript:SubPost('.$row[0].')">'.$col_value.'</a></li>';
+//	echo '<input name="radiobutton" type="radio" value="'.$row[0].'">';echo $col_value.'<br>';
+
+	echo '<ul><li><a href="JavaScript:SubPost_ttask('.$row[0].')"><span class="nor">'.$lang.'</span><span class="bg">'.$i.'</span>'.$col_value.'</a></li></ul>';
+
+    }
+    
+echo '</div>';
+    
+}
+
+elseif( isset($_POST['ttask_id'])||isset($_POST['code_id']) ):
+{
+
+//echo '</div>';
+//echo '</div>';
+
+
+echo '<div id="left">';
+
+//    echo '<p class="rightTxt2">Выбранный Язык: '.$lang.'</p>';
+
+    if (isset($_POST['ttask_id'])) {$ttask_id_real=$_POST['ttask_id'];}
+
+    $link = mysqli_connect('db', 'man_local', '123qwe') or die('Не удалось соединиться: ' . mysqli_error($link));
+    mysqli_select_db($link,'my_db') or die('Не удалось выбрать базу данных');
+    mysqli_set_charset($link,"utf8");
+
+    $query = 'SELECT a.id,a.name,b.name FROM type_task a,lang b where b.id=a.lang_id and a.id='.$ttask_id_real;
+    $result = mysqli_query($link,$query) or die('Запрос не удался: 1' . mysqli_error($link));
+
+    $row = mysqli_fetch_row($result);
+    $ttask_id_name = mb_convert_encoding($row[1],"WINDOWS-1251","UTF-8");
+    $lang = $row[2];
+    echo '<h2><span_no_arrow>Выбранный язык: '.$lang.'</span_no_arrow></h2>';
+    echo '<hr size="1">';
+
+    echo '</br><p class="rightTxt2">Тип задач: '.$ttask_id_name.'</p>';
+
+echo '<div id="left_sprav" style="margin: 0 0 15px 0">';
+
+    $query = 'SELECT * FROM fr_code WHERE type_task_id='.$ttask_id_real;
+    $result = mysqli_query($link,$query) or die('Запрос не удался: 2' . mysqli_error($link));
+    $i=0;
+
+    while ($row = mysqli_fetch_row($result)) {
+	$i++;
+	$col_value = mb_convert_encoding($row[1],"WINDOWS-1251","UTF-8");
+//      echo '<li><a href="">'.$i.'. '.$col_value.'</a></li>';
+	echo '<ul_no_arrow><li><a href="JavaScript:post_code_id('.$row[0].','.$row[3].')"><span class="bg">'.$i.'</span>&nbsp'.$col_value.'</a></li></ul_no_arrow>';
+//	echo '<ul_no_arrow><li><a href="JavaScript:show_win(1,'.$row[0].')"><span class="bg">'.$i.'</span>&nbsp'.$col_value.'</a></li></ul_no_arrow>';
+    }
+    
+echo '</div>';
+    
+    if (isset($_POST['code_id'])) {
+    
+	$query = 'SELECT * FROM fr_code where id='.$_POST['code_id'];
+	$result = mysqli_query($link,$query) or die('Запрос не удался: 1' . mysqli_error($link));
+
+	$row = mysqli_fetch_row($result);
+	$code_name = mb_convert_encoding($row[1],"WINDOWS-1251","UTF-8");
+	$code_txt = mb_convert_encoding($row[2],"WINDOWS-1251","UTF-8");
+    
+    
+//	echo '<ul_no_arrow><li><a href="JavaScript:show_win(1)" id="link_win">Выбранный Код: '.$code_name.'</a></li></ul_no_arrow>';
+//	echo '<script>document.getElementById("link_win").onclick();</script>'; 
+//	echo '<script>("link_win")[0].click();</script>';
+
+//echo '</div>'; left
+
+echo '<script type="text/javascript">';
+echo 'function show_win(state){';
+echo 'var stat;';
+echo 'if (state!=0) stat="block";';
+echo 'else stat="none";';
+echo 'document.getElementById(\'window\').style.display = stat;';
+echo 'document.getElementById(\'wrap\').style.display = stat;';
+echo '}';
+echo '</script>';
+
+echo '<div onclick="show_win(0)" id="wrap"></div>';
+echo '<div id="window">';
+echo '<img class="close" onclick="show_win(0)" src="images/close.png">';
+echo '<div class="contacttext" id="div">Код: </div>';
+echo '<div class="contactformmessage" id="commentstextbox">';
+echo '<textarea name="textarea" class="MassageboxEffectSpr" cols="" rows="">'.$code_txt.'</textarea>';
+echo '</div>';
+echo '</div>';
+
+	echo '<script type="text/javascript">show_win(1)</script>';
+    }
+    
+}
+
+//<!--$("#id_link")[0].click();-->
+else:
+//echo '<div id="left">';
+
+echo '<p class="rightTxt2">Фрагменты кода сгруппированы по языкам, типам задач. Выбор языка находится на панели выше,';
+echo 'далее на странице можно выбрать типичные задачи.</p>';
+
+//echo '</div>';
+
+
+endif;
+
+echo '</div>';
+//<!--left end -->
+
+echo '</div>';
+//<!--body end -->
+
+echo '<br class="spacer" />';
+
+echo '</div>';
+
+//<!--bodyMain end -->
+//<!--footer start -->
+ include 'footer.html';
+//<!--footer end -->
+echo '</body>';
+echo '</html>';
